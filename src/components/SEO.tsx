@@ -1,5 +1,4 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 interface SEOProps {
   title: string;
@@ -11,35 +10,56 @@ interface SEOProps {
   canonical?: string;
 }
 
-export default function SEO({ 
-  title, 
-  description, 
-  name = 'PatchMaster Pro', 
+export default function SEO({
+  title,
+  description,
+  name = 'PatchMaster Pro',
   type = 'website',
   image = 'https://picsum.photos/seed/patch_og/1200/630',
   url = 'https://patchmaster.pro',
   canonical
 }: SEOProps) {
-  return (
-    <Helmet>
-      {/* Standard metadata tags */}
-      <title>{title}</title>
-      <meta name='description' content={description} />
-      {canonical && <link rel="canonical" href={canonical} />}
+  useEffect(() => {
+    // Update title
+    document.title = title;
 
-      {/* Facebook tags */}
-      <meta property="og:type" content={type} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
-      <meta property="og:url" content={url} />
+    // Helper to update or create meta tags
+    const updateMeta = (selector: string, content: string) => {
+      let element = document.querySelector(selector);
+      if (!element) {
+        element = document.createElement('meta');
+        if (selector.startsWith('meta[name=')) {
+          const nameMatch = selector.match(/name=['"](.+?)['"]/);
+          if (nameMatch) element.setAttribute('name', nameMatch[1]);
+        } else if (selector.startsWith('meta[property=')) {
+          const propMatch = selector.match(/property=['"](.+?)['"]/);
+          if (propMatch) element.setAttribute('property', propMatch[1]);
+        }
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
 
-      {/* Twitter tags */}
-      <meta name="twitter:creator" content={name} />
-      <meta name="twitter:card" content={type === 'article' ? 'summary_large_image' : 'summary'} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
-    </Helmet>
-  );
+    updateMeta('meta[name="description"]', description);
+    updateMeta('meta[property="og:type"]', type);
+    updateMeta('meta[property="og:title"]', title);
+    updateMeta('meta[property="og:description"]', description);
+    updateMeta('meta[property="og:image"]', image);
+    updateMeta('meta[property="og:url"]', url);
+    updateMeta('meta[name="twitter:title"]', title);
+    updateMeta('meta[name="twitter:description"]', description);
+    updateMeta('meta[name="twitter:image"]', image);
+
+    if (canonical) {
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', canonical);
+    }
+  }, [title, description, image, url, type, canonical]);
+
+  return null;
 }
