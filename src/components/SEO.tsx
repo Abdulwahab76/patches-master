@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React from 'react';
 
 interface SEOProps {
   title: string;
@@ -19,47 +19,26 @@ export default function SEO({
   url = 'https://patchmaster.pro',
   canonical
 }: SEOProps) {
-  useEffect(() => {
-    // Update title
-    document.title = title;
+  return (
+    <>
+      <title>{title}</title>
+      <meta name="description" content={description} />
 
-    // Helper to update or create meta tags
-    const updateMeta = (selector: string, content: string) => {
-      let element = document.querySelector(selector);
-      if (!element) {
-        element = document.createElement('meta');
-        if (selector.startsWith('meta[name=')) {
-          const nameMatch = selector.match(/name=['"](.+?)['"]/);
-          if (nameMatch) element.setAttribute('name', nameMatch[1]);
-        } else if (selector.startsWith('meta[property=')) {
-          const propMatch = selector.match(/property=['"](.+?)['"]/);
-          if (propMatch) element.setAttribute('property', propMatch[1]);
-        }
-        document.head.appendChild(element);
-      }
-      element.setAttribute('content', content);
-    };
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={type} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={image} />
+      <meta property="og:url" content={url} />
 
-    updateMeta('meta[name="description"]', description);
-    updateMeta('meta[property="og:type"]', type);
-    updateMeta('meta[property="og:title"]', title);
-    updateMeta('meta[property="og:description"]', description);
-    updateMeta('meta[property="og:image"]', image);
-    updateMeta('meta[property="og:url"]', url);
-    updateMeta('meta[name="twitter:title"]', title);
-    updateMeta('meta[name="twitter:description"]', description);
-    updateMeta('meta[name="twitter:image"]', image);
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
+      <meta name="twitter:site" content={name} />
 
-    if (canonical) {
-      let link = document.querySelector('link[rel="canonical"]');
-      if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', 'canonical');
-        document.head.appendChild(link);
-      }
-      link.setAttribute('href', canonical);
-    }
-  }, [title, description, image, url, type, canonical]);
-
-  return null;
+      {canonical && <link rel="canonical" href={canonical} />}
+    </>
+  );
 }

@@ -12,11 +12,13 @@ export default defineConfig(({ mode }) => {
         '/api': 'http://localhost:3001'
       }
     },
-    plugins: [react()],
-    define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+    build: {
+      chunkSizeWarningLimit: 1000,
     },
+    plugins: [react()],
+    // define: {
+    //   'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
+    // },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

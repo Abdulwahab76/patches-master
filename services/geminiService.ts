@@ -2,8 +2,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { DesignIdea } from "../types";
 
-// Always use the apiKey as a named parameter and use process.env.API_KEY directly.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Always use the apiKey as a named parameter and use process.env.GEMINI_API_KEY directly.
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 export const generateDesignIdeas = async (prompt: string): Promise<DesignIdea[]> => {
   try {
