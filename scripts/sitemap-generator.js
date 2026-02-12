@@ -1,5 +1,5 @@
 import { SitemapStream, streamToPromise } from 'sitemap';
-import { createWriteStream } from 'fs';
+import fs, { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -23,15 +23,27 @@ const links = [
 ];
 
 const generateSitemap = async () => {
-    const stream = new SitemapStream({ hostname: 'https://patchmaster.pro' });
+    try {
+        const stream = new SitemapStream({ hostname: 'https://patchmaster.pro' });
 
-    // We can just use the public folder for output
-    const writePath = path.resolve('./public/sitemap.xml');
+        // Ensure the output directory exists
+        const writePath = path.resolve('./public/sitemap.xml');
+        const publicDir = path.dirname(writePath);
 
-    const data = await streamToPromise(Readable.from(links).pipe(stream));
+        if (!fs.existsSync(publicDir)) {
+            console.log('Creating public directory...');
+            fs.mkdirSync(publicDir, { recursive: true });
+        }
 
-    createWriteStream(writePath).write(data.toString());
-    console.log('Sitemap generated at', writePath);
+        const data = await streamToPromise(Readable.from(links).pipe(stream));
+
+        createWriteStream(writePath).write(data.toString());
+        console.log('Sitemap generated at', writePath);
+    } catch (error) {
+        console.error('Failed to generate sitemap:', error.message);
+        // Don't exit with 1 if we want the build to continue even if sitemap fails, 
+        // but here it's likely better to see the error.
+    }
 };
 
 generateSitemap();
