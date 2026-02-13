@@ -16,9 +16,9 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000,
     },
     plugins: [react()],
-    // define: {
-    //   'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
-    // },
+    define: {
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
