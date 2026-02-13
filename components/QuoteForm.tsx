@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { QuoteFormData, PatchProduct } from '../types';
-import { submitQuoteRequest } from '../services/formService';
 
 interface QuoteFormProps {
   selectedProduct?: PatchProduct;
@@ -39,11 +38,47 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ selectedProduct }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const result = await submitQuoteRequest(formData);
-    setLoading(false);
-    if (result.success) setSubmitted(true);
-    else alert(result.message);
+
+    try {
+      const data = new FormData();
+      data.append('Name', formData.fullName);
+      data.append('Email', formData.email);
+      data.append('Phone', formData.phone || 'N/A');
+      data.append('Patch Type', formData.patchType);
+      data.append('Quantity', formData.quantity);
+      data.append('Dimensions', `${formData.width || '?'} x ${formData.height || '?'}`);
+      data.append('Inspiration', formData.designInspiration || 'N/A');
+      data.append('Details', formData.details);
+
+      if (formData.designFile && formData.designFile.size > 5 * 1024 * 1024) {
+        alert('File too large. Max 5 MB allowed.');
+        setLoading(false);
+        return;
+      }
+
+
+      const response = await fetch('https://formspree.io/f/mgolagvg', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        const result = await response.json().catch(() => ({}));
+        alert(result.error || 'There was an issue sending your request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('Failed to send request. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   if (submitted) {
     return (
@@ -116,7 +151,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ selectedProduct }) => {
               ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8" enctype="multipart/form-data">
               {step === 1 && (
                 <div className="animate-in fade-in zoom-in-95 duration-300">
                   <h3 className="text-2xl font-black text-slate-900 mb-6 tracking-tight">Project Fundamentals</h3>
