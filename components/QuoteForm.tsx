@@ -34,46 +34,73 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ selectedProduct }) => {
 
   const handleNextStep = () => setStep(step + 1);
   const handlePrevStep = () => setStep(step - 1);
+  const uploadImageToCloudinary = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "patch_upload"); // your preset name
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dpub6we3r/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Image upload failed");
+    }
+
+    return data.secure_url; // public image URL
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const data = new FormData();
-      data.append('Name', formData.fullName);
-      data.append('Email', formData.email);
-      data.append('Phone', formData.phone || 'N/A');
-      data.append('Patch Type', formData.patchType);
-      data.append('Quantity', formData.quantity);
-      data.append('Dimensions', `${formData.width || '?'} x ${formData.height || '?'}`);
-      data.append('Inspiration', formData.designInspiration || 'N/A');
-      data.append('Details', formData.details);
+      let imageUrl = "";
 
-      if (formData.designFile && formData.designFile.size > 5 * 1024 * 1024) {
-        alert('File too large. Max 5 MB allowed.');
-        setLoading(false);
-        return;
+      // Upload image first (if exists)
+      if (formData.designFile) {
+        if (formData.designFile.size > 5 * 1024 * 1024) {
+          alert("File too large. Max 5MB allowed.");
+          setLoading(false);
+          return;
+        }
+
+        imageUrl = await uploadImageToCloudinary(formData.designFile);
       }
 
+      const data = new FormData();
+      data.append("Name", formData.fullName);
+      data.append("Email", formData.email);
+      data.append("Phone", formData.phone || "N/A");
+      data.append("Patch Type", formData.patchType);
+      data.append("Quantity", formData.quantity);
+      data.append("Dimensions", `${formData.width || "?"} x ${formData.height || "?"}`);
+      data.append("Inspiration", formData.designInspiration || "N/A");
+      data.append("Details", formData.details);
+      data.append("Design Image URL", imageUrl || "No image uploaded");
 
-      const response = await fetch('https://formspree.io/f/mgolagvg', {
-        method: 'POST',
+      const response = await fetch("https://formspree.io/f/mgolagvg", {
+        method: "POST",
         body: data,
         headers: {
-          'Accept': 'application/json'
-        }
+          Accept: "application/json",
+        },
       });
 
       if (response.ok) {
         setSubmitted(true);
       } else {
-        const result = await response.json().catch(() => ({}));
-        alert(result.error || 'There was an issue sending your request. Please try again.');
+        alert("There was an issue sending your request.");
       }
     } catch (error) {
-      console.error('Submission error:', error);
-      alert('Failed to send request. Please check your connection.');
+      console.error(error);
+      alert("Failed to send request.");
     } finally {
       setLoading(false);
     }
