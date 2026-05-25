@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Shop from '../../components/Shop';
 import SEO from '../components/SEO';
 import { ProductSchema } from '../components/Schema';
-import { PatchProduct } from '../../types';
 import { CATEGORIES, PRODUCTS } from '../../constants';
+import { PatchProduct } from '@/types/types';
 
 interface ShopPageProps {
     onAddToCart: (p: PatchProduct) => void;

@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
           <div className="mt-12 lg:mt-0 relative">
             <div className="bg-gradient-to-tr from-orange-100 to-red-100 rounded-3xl p-4 rotate-3 transform transition-transform hover:rotate-0">
                <img 
-                 src="https://picsum.photos/seed/hero/800/600" 
+                 src="https://i.pinimg.com/originals/ac/37/71/ac3771c19e1a52782787d031526084f4.jpg" 
                  alt="Custom Patches Hero" 
                  className="rounded-2xl shadow-2xl border-4 border-white"
                />

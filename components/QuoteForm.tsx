@@ -1,6 +1,6 @@
 
+import { PatchProduct, QuoteFormData } from '@/types/types';
 import React, { useState, useEffect } from 'react';
-import { QuoteFormData, PatchProduct } from '../types';
 
 interface QuoteFormProps {
   selectedProduct?: PatchProduct;

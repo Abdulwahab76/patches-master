@@ -6,7 +6,7 @@ import Footer from './components/Footer';
 import HomePage from './src/pages/HomePage';
 import ShopPage from './src/pages/ShopPage';
 import QuotePage from './src/pages/QuotePage';
-import { PatchProduct } from './types';
+import { PatchProduct } from './types/types';
 
 const App: React.FC = () => {
   const [cartCount, setCartCount] = useState(0);
