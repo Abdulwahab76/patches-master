@@ -9,6 +9,7 @@ export type PatchCategory =
   | 'Sublimated'
   | 'Metflex';
 
+ 
 export interface PatchProduct {
   id: string;
   name: string;
@@ -16,6 +17,7 @@ export interface PatchProduct {
   image: string;
   category: PatchCategory;
   priceStart: number;
+  
 }
 
 export interface DesignIdea {

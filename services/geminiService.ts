@@ -1,11 +1,12 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
-import { DesignIdea } from "../types";
+import { DesignIdea } from "../types/types";
 
 // Always use the apiKey as a named parameter and use process.env.GEMINI_API_KEY directly.
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
-export const generateDesignIdeas = async (prompt: string): Promise<DesignIdea[]> => {
+export const generateDesignIdeas = async (
+  prompt: string
+): Promise<DesignIdea[]> => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -24,7 +25,12 @@ export const generateDesignIdeas = async (prompt: string): Promise<DesignIdea[]>
               recommendedBacking: { type: Type.STRING },
             },
             required: ["title", "concept", "style", "recommendedBacking"],
-            propertyOrdering: ["title", "concept", "style", "recommendedBacking"],
+            propertyOrdering: [
+              "title",
+              "concept",
+              "style",
+              "recommendedBacking",
+            ],
           },
         },
       },
